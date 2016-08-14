@@ -1,0 +1,14 @@
+ext {
+  kotlinVersion = "1.0.3"
+
+  expectKt = "com.nhaarman:expect.kt:0.6.0"
+  gradleBintrayPlugin = 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.1'
+  gradleVersionsPlugin = "com.github.ben-manes:gradle-versions-plugin:0.13.0"
+  guava = "com.google.guava:guava:19.0"
+  jUnit = "junit:junit:4.12"
+  kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+  kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+  mockitoKotlin = "com.nhaarman:mockito-kotlin:0.6.0"
+  retrofit2 = "com.squareup.retrofit2:retrofit:2.1.0"
+  rxJava = "io.reactivex:rxjava:1.1.7"
+}

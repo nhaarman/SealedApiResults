@@ -1,0 +1,59 @@
+gradle.allprojects {
+
+    ext.tag = {
+        def tag = ext.execute("git tag")
+        (tag == null || tag.isEmpty()) ? "NO_TAG" : tag
+    }
+
+    ext.branch = {
+        ext.execute("git rev-parse --abbrev-ref HEAD")
+    }
+
+    ext.isDirty = {
+        def describe = ext.execute("git describe --dirty")
+        if (describe == null) return true
+        describe.contains("dirty")
+    }
+
+    ext.getVersionName = { ->
+        def result = tag()
+
+        def branch = branch()
+        if (branch != "master") {
+            result += "_$branch"
+        }
+
+        if (getCommitCountSinceLastTag() > 0 || isDirty()) {
+            result += "-SNAPSHOT"
+        }
+
+        if (isDirty()) {
+            result += "-dirty"
+        }
+
+        return result
+    }
+
+    ext.getCommitCount = {
+        return ext.execute("git rev-list --count HEAD")
+    }
+
+    ext.getCommitCountSinceLastTag = {
+        def lastTag = ext.execute("git rev-list --tags --no-walk --max-count=1")
+        return ext.execute("git rev-list $lastTag..HEAD --count").toInteger()
+    }
+
+    ext.execute = { command ->
+        try {
+            def stdout = new ByteArrayOutputStream()
+            exec {
+                commandLine(command.split(" "))
+                standardOutput = stdout
+            }
+            return stdout.toString().trim()
+        } catch (e) {
+            System.err.println "Error executing [$command]: \"${e.getMessage()}\"."
+            return null
+        }
+    }
+}

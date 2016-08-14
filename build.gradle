@@ -1,0 +1,40 @@
+buildscript {
+    project.apply from: './dependencies.gradle'
+    project.apply from: './gradle/scripts/git.gradle'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath kotlinGradlePlugin
+        classpath gradleVersionsPlugin
+    }
+}
+
+apply plugin: 'com.github.ben-manes.versions'
+
+
+subprojects {
+
+    buildscript {
+        repositories {
+            jcenter()
+        }
+        dependencies {
+            classpath gradleBintrayPlugin
+        }
+    }
+
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+
+
+    afterEvaluate {
+    }
+}
+
+println "${getVersionName()} (${getCommitCount()})"
