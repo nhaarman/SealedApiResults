@@ -4,11 +4,10 @@ buildscript {
 
     repositories {
         jcenter()
-        mavenCentral()
     }
 
     dependencies {
-        classpath kotlinGradlePlugin
+//        classpath kotlinGradlePlugin
         classpath gradleVersionsPlugin
     }
 }
@@ -29,11 +28,6 @@ subprojects {
 
     repositories {
         jcenter()
-        mavenCentral()
-    }
-
-
-    afterEvaluate {
     }
 }
 

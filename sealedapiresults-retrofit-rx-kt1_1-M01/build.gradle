@@ -7,21 +7,23 @@ apply from: '../gradle/scripts/bintray.gradle'
 buildscript {
     repositories {
         jcenter()
+        maven { url 'http://dl.bintray.com/kotlin/kotlin-eap-1.1' }
     }
 
     dependencies {
-        classpath kotlinGradlePlugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.1-M01"
+        classpath gradleVersionsPlugin
     }
 }
 
 dependencies {
-    compile project(':sealedapiresults')
+    compile project(':sealedapiresults-retrofit-kt1_1-M01')
 
-    compile retrofit2
+    compile rxJava
 
     /* Tests */
     testCompile jUnit
-    testCompile expectKt
     testCompile mockitoKotlin
+    testCompile expectKt
     testCompile guava
 }

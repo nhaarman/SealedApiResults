@@ -1,7 +1,7 @@
 gradle.allprojects {
 
     ext.tag = {
-        def tag = ext.execute("git tag")
+        def tag = ext.execute("git describe")
         (tag == null || tag.isEmpty()) ? "NO_TAG" : tag
     }
 
