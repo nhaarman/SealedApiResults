@@ -7,7 +7,7 @@ buildscript {
     }
 
     dependencies {
-//        classpath kotlinGradlePlugin
+        classpath kotlinGradlePlugin
         classpath gradleVersionsPlugin
     }
 }
