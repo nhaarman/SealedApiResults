@@ -1,79 +1,84 @@
 package com.nhaarman.sealedapiresults
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import com.nhaarman.sealedapiresults.SealedApiResult.NetworkError
+import io.reactivex.Scheduler
+import io.reactivex.Single
+import retrofit2.Call
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
+import retrofit2.Response
 import retrofit2.Retrofit
-import rx.Observable
-import rx.Scheduler
-import rx.Single
-import java.lang.reflect.*
+import java.io.IOException
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
 
 
 class RxSealedCallAdapterFactory(private val defaultScheduler: Scheduler? = null) : Factory() {
 
-    override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*>? {
-        val rawType = returnType.rawType
-        if (rawType != Single::class.java && rawType != Observable::class.java) {
-            return null
-        }
-
-        val type = if (rawType == Single::class.java) "Single" else "Observable"
-        if (returnType !is ParameterizedType) {
-            error("$type return type must be parameterized as $type<SealedApiResult<Foo>> or $type<SealedApiResult<out Foo>>")
-        }
-
-        val observableType = returnType.getParameterUpperBound(0)
-        val rawObservableType = observableType.rawType
-        if (rawObservableType != SealedApiResult::class.java || observableType !is ParameterizedType) {
-            error("$type return type must be parameterized as $type<SealedApiResult<Foo>> or $type<SealedApiResult<out Foo>>")
-        }
-
-        val adapter = ObservableSealedCallAdapter(observableType.getParameterUpperBound(0), defaultScheduler)
-        if (rawType == Single::class.java) {
-            return SingleSealedCallAdapter(adapter)
-        }
-        return adapter
+    override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
+        val newType = WrappedType(returnType)
+        return RxSealedCallAdapter(annotations, newType, retrofit, defaultScheduler)
     }
 }
 
+private class WrappedType(private val returnType: Type) : ParameterizedType {
 
-private fun ParameterizedType.getParameterUpperBound(index: Int): Type {
-    if (index < 0 || index >= actualTypeArguments.size) {
-        throw IllegalArgumentException(
-              "Index $index not in range [0,${actualTypeArguments.size}) for $this")
+    override fun getRawType(): Type {
+        return (returnType as ParameterizedType).rawType
     }
-    val paramType = actualTypeArguments[index]
-    if (paramType is WildcardType) {
-        return paramType.upperBounds[0]
+
+    override fun getOwnerType(): Type {
+        return (returnType as ParameterizedType).ownerType
     }
-    return paramType
+
+    override fun getActualTypeArguments(): Array<Type> {
+        return arrayOf(object : ParameterizedType {
+            override fun getRawType(): Type {
+                return Response::class.java
+            }
+
+            override fun getOwnerType(): Type? {
+                return null
+            }
+
+            override fun getActualTypeArguments(): Array<Type> {
+                return ((returnType as ParameterizedType).actualTypeArguments[0] as ParameterizedType).actualTypeArguments
+            }
+        })
+
+    }
 }
 
-private val Type.rawType: Class<*> get() {
-    if (this is Class<*>) {
-        // Type is a normal class.
-        return this
-    }
-    if (this is ParameterizedType) {
+private class RxSealedCallAdapter(
+      annotations: Array<out Annotation>,
+      newType: WrappedType,
+      retrofit: Retrofit,
+      defaultScheduler: Scheduler?
+) : CallAdapter<Any, Any> {
 
-        // I'm not exactly sure why getRawType() returns Type instead of Class. Neal isn't either but
-        // suspects some pathological case related to nested classes exists.
-        val rawType = this.getRawType()
-        if (rawType !is Class<*>) throw IllegalArgumentException()
-        return rawType
-    }
-    if (this is GenericArrayType) {
-        val componentType = this.genericComponentType
-        return java.lang.reflect.Array.newInstance(componentType.rawType, 0).javaClass
-    }
-    if (this is TypeVariable<*>) {
-        // We could use the variable's bounds, but that won't work if there are multiple. Having a raw
-        // this that's more general than necessary is okay.
-        return Any::class.java
-    }
-    if (this is WildcardType) {
-        return this.upperBounds[0].rawType
+    @Suppress("UNCHECKED_CAST")
+    private val delegate =
+          RxJava2CallAdapterFactory.createWithScheduler(defaultScheduler).get(
+                newType,
+                annotations,
+                retrofit
+          ) as CallAdapter<Any, Single<Response<*>>>
+
+    override fun adapt(call: Call<Any>): Any {
+        val adapt = delegate.adapt(call)
+        return adapt
+              .map {
+                  @Suppress("USELESS_CAST")
+                  it.toSealedApiResult() as SealedApiResult<Any>
+              }
+              .onErrorResumeNext { t ->
+                  if (t is IOException) Single.just(NetworkError(t))
+                  else Single.error(t)
+              }
     }
 
-    throw IllegalArgumentException("Expected a Class, ParameterizedType, or GenericArrayType, but <$this> is of type ${this.javaClass.name}")
+    override fun responseType(): Type {
+        return delegate.responseType()
+    }
 }

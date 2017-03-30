@@ -19,7 +19,7 @@ internal class SealedCallAdapterTest {
 
     val successResult = "test"
 
-    lateinit var adapter: SealedCallAdapter
+    lateinit var adapter: SealedCallAdapter<String>
 
     @Before
     fun setup() {
@@ -45,7 +45,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(200))
 
         /* Then */
-        expect(result).toBeInstanceOf<Ok200<String>>() {
+        expect(result).toBeInstanceOf<Ok200<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -56,7 +56,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(201))
 
         /* Then */
-        expect(result).toBeInstanceOf<Created201<String>>() {
+        expect(result).toBeInstanceOf<Created201<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -67,7 +67,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(202))
 
         /* Then */
-        expect(result).toBeInstanceOf<Accepted202<String>>() {
+        expect(result).toBeInstanceOf<Accepted202<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -78,7 +78,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(203))
 
         /* Then */
-        expect(result).toBeInstanceOf<NonAuthoritativeInformation203<String>>() {
+        expect(result).toBeInstanceOf<NonAuthoritativeInformation203<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -107,7 +107,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(206))
 
         /* Then */
-        expect(result).toBeInstanceOf<PartialContent206<String>>() {
+        expect(result).toBeInstanceOf<PartialContent206<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -118,7 +118,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(207))
 
         /* Then */
-        expect(result).toBeInstanceOf<MultiStatus207<String>>() {
+        expect(result).toBeInstanceOf<MultiStatus207<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -129,7 +129,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(208))
 
         /* Then */
-        expect(result).toBeInstanceOf<AlreadyReported208<String>>() {
+        expect(result).toBeInstanceOf<AlreadyReported208<String>> {
             expect(it.body).toBe("test")
         }
     }
@@ -140,7 +140,7 @@ internal class SealedCallAdapterTest {
         val result = adapter.adapt(successCall(226))
 
         /* Then */
-        expect(result).toBeInstanceOf<IMUsed226<String>>() {
+        expect(result).toBeInstanceOf<IMUsed226<String>> {
             expect(it.body).toBe("test")
         }
     }

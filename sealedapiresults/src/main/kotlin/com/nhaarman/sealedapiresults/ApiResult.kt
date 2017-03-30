@@ -37,22 +37,22 @@ sealed class SealedApiResult<out T> {
         /* 2XX Success results */
         sealed class Success2XX<out T>(code: Int, headers: Map<String, List<String>> = emptyMap()) : Some<T>(code, headers) {
 
-            class Ok200<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(200, headers) {
+            class Ok200<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(200, headers) {
                 override fun <R> map(map: ((T) -> R)) = Ok200(map(body), headers)
                 override fun toString() = "Ok200(body=$body, headers=$headers)"
             }
 
-            class Created201<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(201, headers) {
+            class Created201<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(201, headers) {
                 override fun <R> map(map: ((T) -> R)) = Created201(map(body), headers)
                 override fun toString() = "Created201(body = $body, headers=$headers)"
             }
 
-            class Accepted202<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(202, headers) {
+            class Accepted202<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(202, headers) {
                 override fun <R> map(map: ((T) -> R)) = Accepted202(map(body), headers)
                 override fun toString() = "Accepted202(body=$body, headers=$headers)"
             }
 
-            class NonAuthoritativeInformation203<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(203, headers) {
+            class NonAuthoritativeInformation203<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(203, headers) {
                 override fun <R> map(map: ((T) -> R)) = NonAuthoritativeInformation203(map(body), headers)
                 override fun toString() = "NonAuthoritativeInformation203(body=$body, headers=$headers)"
             }
@@ -69,22 +69,22 @@ sealed class SealedApiResult<out T> {
                 override fun toString() = "ResetContent205(headers=$headers)"
             }
 
-            class PartialContent206<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(206, headers) {
+            class PartialContent206<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(206, headers) {
                 override fun <R> map(map: ((T) -> R)) = PartialContent206(map(body), headers)
                 override fun toString() = "PartialContent206(body=$body, headers=$headers)"
             }
 
-            class MultiStatus207<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(207, headers) {
+            class MultiStatus207<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(207, headers) {
                 override fun <R> map(map: ((T) -> R)) = MultiStatus207(map(body), headers)
                 override fun toString() = "MultiStatus207(body=$body, headers=$headers)"
             }
 
-            class AlreadyReported208<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(208, headers) {
+            class AlreadyReported208<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(208, headers) {
                 override fun <R> map(map: ((T) -> R)) = AlreadyReported208(map(body), headers)
                 override fun toString() = "AlreadyReported208(body=$body, headers=$headers)"
             }
 
-            class IMUsed226<out T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(226, headers) {
+            class IMUsed226<T>(val body: T, headers: Map<String, List<String>> = emptyMap()) : Success2XX<T>(226, headers) {
                 override fun <R> map(map: ((T) -> R)) = IMUsed226(map(body), headers)
                 override fun toString() = "IMUsed226(body=$body, headers=$headers)"
             }
@@ -383,7 +383,7 @@ sealed class SealedApiResult<out T> {
     }
 
     /* Network error */
-    class NetworkError<out T>(val e: IOException) : SealedApiResult<T>() {
+    class NetworkError<T>(val e: IOException) : SealedApiResult<T>() {
         override fun <R> map(map: ((T) -> R)) = NetworkError<R>(e)
         override fun toString() = "NetworkError(e=${e.message})"
     }

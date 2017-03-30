@@ -3,12 +3,16 @@ package com.nhaarman.sealedapiresults
 import retrofit2.CallAdapter
 import retrofit2.CallAdapter.Factory
 import retrofit2.Retrofit
-import java.lang.reflect.*
+import java.lang.reflect.GenericArrayType
+import java.lang.reflect.ParameterizedType
+import java.lang.reflect.Type
+import java.lang.reflect.TypeVariable
+import java.lang.reflect.WildcardType
 
 
 class SealedCallAdapterFactory() : Factory() {
 
-    override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*>? {
+    override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
         val rawType = returnType.rawType
         if (rawType != SealedApiResult::class.java) {
             return null
@@ -18,7 +22,7 @@ class SealedCallAdapterFactory() : Factory() {
             error("SealedApiResult return type must be parameterized as SealedApiResult<Foo> or SealedApiResult<out Foo>")
         }
 
-        return SealedCallAdapter(returnType.getParameterUpperBound(0))
+        return SealedCallAdapter<Any>(returnType.getParameterUpperBound(0))
     }
 }
 

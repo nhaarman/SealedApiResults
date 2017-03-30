@@ -9,11 +9,11 @@ import java.lang.reflect.Type
 /**
  * Can adapt [Call]s to [Single<SealedApiResult<*>>]s.
  */
-internal class SealedCallAdapter(private val responseType: Type) : CallAdapter<SealedApiResult<*>> {
+internal class SealedCallAdapter<R>(private val responseType: Type) : CallAdapter<R, SealedApiResult<*>> {
 
     override fun responseType() = responseType
 
-    override fun <R : Any?> adapt(call: Call<R>): SealedApiResult<R> {
+    override fun adapt(call: Call<R>): SealedApiResult<R> {
         return try {
             call.execute().toSealedApiResult()
         } catch(e: IOException) {
