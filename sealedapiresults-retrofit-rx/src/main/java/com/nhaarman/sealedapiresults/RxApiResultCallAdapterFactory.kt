@@ -1,7 +1,7 @@
 package com.nhaarman.sealedapiresults
 
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import com.nhaarman.sealedapiresults.SealedApiResult.NetworkError
+import com.nhaarman.sealedapiresults.ApiResult.NetworkError
 import io.reactivex.Scheduler
 import io.reactivex.Single
 import retrofit2.Call
@@ -14,11 +14,11 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 
 
-class RxSealedCallAdapterFactory(private val defaultScheduler: Scheduler? = null) : Factory() {
+class RxApiResultCallAdapterFactory(private val defaultScheduler: Scheduler? = null) : Factory() {
 
     override fun get(returnType: Type, annotations: Array<out Annotation>, retrofit: Retrofit): CallAdapter<*, *>? {
         val newType = WrappedType(returnType)
-        return RxSealedCallAdapter(annotations, newType, retrofit, defaultScheduler)
+        return RxApiResultCallAdapter(annotations, newType, retrofit, defaultScheduler)
     }
 }
 
@@ -50,7 +50,7 @@ private class WrappedType(private val returnType: Type) : ParameterizedType {
     }
 }
 
-private class RxSealedCallAdapter(
+private class RxApiResultCallAdapter(
       annotations: Array<out Annotation>,
       newType: WrappedType,
       retrofit: Retrofit,
@@ -68,10 +68,7 @@ private class RxSealedCallAdapter(
     override fun adapt(call: Call<Any>): Any {
         val adapt = delegate.adapt(call)
         return adapt
-              .map {
-                  @Suppress("USELESS_CAST")
-                  it.toSealedApiResult() as SealedApiResult<Any>
-              }
+              .map { it.toApiResult() as ApiResult<Any> }
               .onErrorResumeNext { t ->
                   if (t is IOException) Single.just(NetworkError(t))
                   else Single.error(t)

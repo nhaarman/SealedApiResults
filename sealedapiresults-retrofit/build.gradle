@@ -13,5 +13,6 @@ dependencies {
     testCompile jUnit
     testCompile expectKt
     testCompile mockitoKotlin
+    testCompile kotlinReflect
     testCompile guava
 }

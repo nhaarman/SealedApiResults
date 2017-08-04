@@ -1,6 +1,5 @@
 buildscript {
     project.apply from: './dependencies.gradle'
-    project.apply from: './gradle/scripts/git.gradle'
 
     repositories {
         jcenter()
@@ -13,7 +12,7 @@ buildscript {
 }
 
 apply plugin: 'com.github.ben-manes.versions'
-
+project.apply from: './gradle/scripts/git.gradle'
 
 subprojects {
 
@@ -31,4 +30,4 @@ subprojects {
     }
 }
 
-println "${getVersionName()} (${getCommitCount()})"
+println "${git.versionName()} (${git.commitCount()})"

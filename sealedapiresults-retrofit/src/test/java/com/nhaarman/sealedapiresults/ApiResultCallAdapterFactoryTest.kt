@@ -8,15 +8,15 @@ import org.junit.Test
 import retrofit2.Retrofit
 
 
-class SealedCallAdapterFactoryTest {
+class ApiResultCallAdapterFactoryTest {
 
     lateinit var retrofit: Retrofit
-    lateinit var factory: SealedCallAdapterFactory
+    lateinit var factory: ApiResultCallAdapterFactory
 
     @Before
     fun setup() {
         retrofit = Retrofit.Builder().baseUrl("http://localhost/").build()
-        factory = SealedCallAdapterFactory()
+        factory = ApiResultCallAdapterFactory()
     }
 
     @Test
@@ -31,16 +31,16 @@ class SealedCallAdapterFactoryTest {
     @Test
     fun nonParameterizedType_throws() {
         /* Expect */
-        expectErrorWithMessage("return type must be parameterized as SealedApiResult<Foo> or SealedApiResult<out Foo>") on {
+        expectErrorWithMessage("return type must be parameterized as ApiResult<Foo> or ApiResult<out Foo>") on {
             /* When */
-            factory.get(SealedApiResult::class.java, emptyArray(), retrofit)
+            factory.get(ApiResult::class.java, emptyArray(), retrofit)
         }
     }
 
     @Test
     fun properType_returnsProperCallAdapter() {
         /* Given */
-        val type = object : TypeToken<SealedApiResult<String>>() {}.type
+        val type = object : TypeToken<ApiResult<String>>() {}.type
 
         /* When */
         val result = factory.get(type, emptyArray(), retrofit)
@@ -49,10 +49,11 @@ class SealedCallAdapterFactoryTest {
         expect(result?.responseType()).toBe(String::class.java)
     }
 
+    @Suppress("REDUNDANT_PROJECTION")
     @Test
     fun properOutType_returnsProperCallAdapter() {
         /* Given */
-        val type = object : TypeToken<SealedApiResult<out String>>() {}.type
+        val type = object : TypeToken<ApiResult<out String>>() {}.type
 
         /* When */
         val result = factory.get(type, emptyArray(), retrofit)
@@ -64,7 +65,7 @@ class SealedCallAdapterFactoryTest {
     @Test
     fun properArrayType_returnsProperCallAdapter() {
         /* Given */
-        val type = object : TypeToken<SealedApiResult<Array<String>>>() {}.type
+        val type = object : TypeToken<ApiResult<Array<String>>>() {}.type
 
         /* When */
         val result = factory.get(type, emptyArray(), retrofit)
@@ -76,7 +77,7 @@ class SealedCallAdapterFactoryTest {
     @Test
     fun properWildcardType_returnsProperCallAdapter() {
         /* Given */
-        val type = object : TypeToken<SealedApiResult<*>>() {}.type
+        val type = object : TypeToken<ApiResult<*>>() {}.type
 
         /* When */
         val result = factory.get(type, emptyArray(), retrofit)

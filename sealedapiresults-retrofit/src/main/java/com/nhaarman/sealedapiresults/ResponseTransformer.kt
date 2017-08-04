@@ -1,14 +1,14 @@
 package com.nhaarman.sealedapiresults
 
-import com.nhaarman.sealedapiresults.SealedApiResult.Some
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.ClientError4XX.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.Informational1XX.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.Redirection3XX.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.ServerError5xx.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.Success2XX.*
+import com.nhaarman.sealedapiresults.ApiResult.Some
+import com.nhaarman.sealedapiresults.ApiResult.Some.ClientError4XX.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.Informational1XX.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.Redirection3XX.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.ServerError5xx.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.Success2XX.*
 import retrofit2.Response
 
-fun <R : Any?> Response<R>.toSealedApiResult(): Some<R> {
+fun <R : Any?> Response<R>.toApiResult(): Some<R> {
     return when (code) {
         100 -> Continue100<R>(headers)
         101 -> SwitchingProtocols101<R>(headers)
@@ -82,7 +82,7 @@ private val Response<*>.code: Int
     get() = code()
 
 private val <R> Response<R>.body: R
-    get() = body()
+    get() = body()!!
 
 private val Response<*>.headers: Map<String, List<String>>
     get() = headers().toMultimap()

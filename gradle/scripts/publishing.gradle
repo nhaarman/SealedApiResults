@@ -6,7 +6,7 @@ artifacts {
   archives sourceJar
 }
 
-version = rootProject.ext.getVersionName()
+version = rootProject.git.versionName()
 
 configure(install.repositories.mavenInstaller) {
   pom.project {

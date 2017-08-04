@@ -1,10 +1,10 @@
 package com.nhaarman.sealedapiresults
 
 import com.nhaarman.expect.expect
-import com.nhaarman.sealedapiresults.SealedApiResult.NetworkError
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.ClientError4XX.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.ServerError5xx.*
-import com.nhaarman.sealedapiresults.SealedApiResult.Some.Success2XX.*
+import com.nhaarman.sealedapiresults.ApiResult.NetworkError
+import com.nhaarman.sealedapiresults.ApiResult.Some.ClientError4XX.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.ServerError5xx.*
+import com.nhaarman.sealedapiresults.ApiResult.Some.Success2XX.*
 import okhttp3.Protocol
 import okhttp3.Request
 import okhttp3.ResponseBody
@@ -15,15 +15,15 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.IOException
 
-internal class SealedCallAdapterTest {
+internal class ApiResultCallAdapterTest {
 
     val successResult = "test"
 
-    lateinit var adapter: SealedCallAdapter<String>
+    lateinit var adapter: ApiResultCallAdapter<String>
 
     @Before
     fun setup() {
-        adapter = SealedCallAdapter(String::class.java)
+        adapter = ApiResultCallAdapter(String::class.java)
     }
 
     @Test
@@ -488,18 +488,19 @@ internal class SealedCallAdapterTest {
     }
 
     private fun successCall(responseCode: Int): Call<String> =
-            object : SimpleCall<String>() {
-                override fun execute(): Response<String> {
-                    return Response.success(
-                            successResult,
-                            okhttp3.Response.Builder()
-                                    .code(responseCode)
-                                    .protocol(Protocol.HTTP_1_1)
-                                    .request(Request.Builder().url("http://localhost/").build())
-                                    .build()
-                    )
-                }
-            }
+          object : SimpleCall<String>() {
+              override fun execute(): Response<String> {
+                  return Response.success(
+                        successResult,
+                        okhttp3.Response.Builder()
+                              .code(responseCode)
+                              .protocol(Protocol.HTTP_1_1)
+                              .request(Request.Builder().url("http://localhost/").build())
+                              .message("message")
+                              .build()
+                  )
+              }
+          }
 
     private fun nonSuccessCall(responseCode: Int): Call<String> {
         return object : SimpleCall<String>() {
