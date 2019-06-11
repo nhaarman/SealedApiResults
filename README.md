@@ -1,7 +1,7 @@
 # SealedApiResults
 [ ![Download](https://api.bintray.com/packages/nhaarman/maven/SealedApiResults/images/download.svg) ](https://bintray.com/nhaarman/maven/SealedApiResults/_latestVersion)
 
-_SealedApiResults has been archived in favor of [HttpMonads](github.com/nhaarman/httpmonads)_.
+_SealedApiResults has been archived in favor of [HttpMonads](https://github.com/nhaarman/httpmonads)_.
 
 SealedApiResults utilizes Kotlin's sealed classes to provide a safe way of handling http network calls.
 
